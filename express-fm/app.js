@@ -1,7 +1,7 @@
 const express = require("express");
-const cors = require("cors");
-const morgan = require("morgan");
-const router = require("./router");
+const cors = require("cors"); // 跨域的处理
+const morgan = require("morgan"); // 日志的打印
+const router = require("./router"); // 路由
 const app = express();
 
 app.use(express.json());

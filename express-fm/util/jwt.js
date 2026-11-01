@@ -1,18 +1,28 @@
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
+const { uuid } = require("../config/config.default");
 const tojwt = promisify(jwt.sign);
 const verify = promisify(jwt.verify);
 
 module.exports.verifyToken = async (req, res, next) => {
   console.log(req.headers.authorization);
   let token = req.headers.authorization;
-  
-  next();
+  token = token ? token.split("Bearer ")[1] : null;
+
+  if (!token) {
+    res.status(402).json({ error: "请传入token" });
+  }
+  try {
+    let userinfo = await verify(token, uuid);
+    next();
+  } catch (error) {
+    res.status(402).json({ error: "无效token" });
+  }
 };
 
 module.exports.createToken = async (userInfo) => {
-  return await tojwt({ userInfo }, "aa970541-a461-4e43-8cfc-82cacc3be58c", {
-    expiresIn: 60 * 60,
+  return await tojwt({ userInfo }, uuid, {
+    expiresIn: 60 * 60 * 24,
   });
 };
 
